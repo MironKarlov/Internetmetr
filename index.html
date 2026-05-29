@@ -1,156 +1,631 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Интернетометр</title>
-
-<style>
-    body{
-        margin:0;
-        font-family:Arial, sans-serif;
-        background:linear-gradient(135deg,#0f172a,#1e293b);
-        color:white;
-        display:flex;
-        justify-content:center;
-        align-items:center;
-        height:100vh;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=2.0, viewport-fit=cover">
+  <title>Интернетометр • Wi-Fi / Сотовая связь</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    .card{
-        background:#111827;
-        padding:30px;
-        border-radius:20px;
-        width:320px;
-        text-align:center;
-        box-shadow:0 0 20px rgba(0,0,0,0.4);
+    body {
+      background: linear-gradient(145deg, #0b0f1c 0%, #1a1f2f 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
+      padding: 20px;
+      margin: 0;
     }
 
-    h1{
-        margin-bottom:20px;
+    .meter-card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-radius: 48px;
+      padding: 32px 28px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 30px 50px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: all 0.3s ease;
     }
 
-    .speed{
-        font-size:55px;
-        font-weight:bold;
-        margin:20px 0;
+    h1 {
+      font-size: 1.9rem;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      color: #eef3ff;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-shadow: 0 4px 10px rgba(0,0,0,0.4);
     }
 
-    .status{
-        font-size:28px;
-        font-weight:bold;
-        padding:10px;
-        border-radius:12px;
+    h1 span {
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 30px;
+      padding: 4px 14px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #b9c8ff;
     }
 
-    .bad{
-        background:#dc2626;
+    .connection-badge {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 100px;
+      padding: 10px 24px;
+      margin: 16px 0 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-weight: 500;
+      font-size: 1.1rem;
+      color: #d2e0ff;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
     }
 
-    .good{
-        background:#f59e0b;
+    .connection-type {
+      font-weight: 700;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .excellent{
-        background:#16a34a;
+    .wifi-icon, .cellular-icon {
+      font-size: 1.4rem;
+      filter: drop-shadow(0 0 6px currentColor);
     }
 
-    button{
-        margin-top:20px;
-        padding:12px 20px;
-        border:none;
-        border-radius:12px;
-        background:#2563eb;
-        color:white;
-        font-size:18px;
-        cursor:pointer;
+    .speed-display {
+      margin: 20px 0 12px;
+      background: rgba(10, 15, 27, 0.7);
+      border-radius: 80px;
+      padding: 22px 30px;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6);
     }
 
-    button:hover{
-        background:#1d4ed8;
+    .speed-value {
+      font-size: 3.8rem;
+      font-weight: 700;
+      line-height: 1;
+      color: #ffffff;
+      text-shadow: 0 0 18px rgba(100, 150, 255, 0.7);
+      letter-spacing: 1px;
     }
 
-    .info{
-        margin-top:15px;
-        color:#cbd5e1;
+    .speed-unit {
+      font-size: 1.3rem;
+      font-weight: 400;
+      color: #9aa9c7;
+      margin-left: 4px;
     }
-</style>
+
+    .quality-badge {
+      margin: 14px 0 10px;
+      font-size: 1.4rem;
+      font-weight: 700;
+      padding: 10px 32px;
+      border-radius: 40px;
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+
+    .quality-excellent {
+      background: rgba(34, 197, 94, 0.2);
+      color: #4ade80;
+      border-color: rgba(74, 222, 128, 0.6);
+      text-shadow: 0 0 12px #22c55e;
+    }
+
+    .quality-good {
+      background: rgba(250, 204, 21, 0.18);
+      color: #facc15;
+      border-color: rgba(250, 204, 21, 0.6);
+      text-shadow: 0 0 10px #eab308;
+    }
+
+    .quality-poor {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      border-color: rgba(248, 113, 113, 0.6);
+      text-shadow: 0 0 10px #ef4444;
+    }
+
+    .test-button {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: white;
+      font-weight: 600;
+      font-size: 1.2rem;
+      padding: 16px 36px;
+      border-radius: 60px;
+      margin: 20px 0 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.25s;
+      letter-spacing: 0.4px;
+      background: linear-gradient(135deg, rgba(79, 114, 205, 0.5) 0%, rgba(30, 45, 90, 0.6) 100%);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+      width: fit-content;
+      min-width: 200px;
+    }
+
+    .test-button:hover {
+      background: linear-gradient(135deg, rgba(99, 134, 235, 0.7) 0%, rgba(40, 55, 110, 0.75) 100%);
+      border-color: rgba(255, 255, 255, 0.45);
+      transform: scale(1.03);
+      box-shadow: 0 12px 28px rgba(0, 160, 255, 0.3);
+    }
+
+    .test-button:active {
+      transform: scale(0.97);
+    }
+
+    .test-button:disabled {
+      opacity: 0.65;
+      transform: none;
+      pointer-events: none;
+      filter: grayscale(0.3);
+    }
+
+    .meta-info {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      margin-top: 12px;
+      color: #b7c2e0;
+      font-size: 0.85rem;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 10px 22px;
+      border-radius: 30px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .progress-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #a5b9ff;
+      font-weight: 500;
+      margin: 8px 0 0;
+      height: 24px;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .error-message {
+      color: #ffb3b3;
+      font-size: 0.9rem;
+      margin-top: 6px;
+    }
+  </style>
 </head>
 <body>
+  <div class="meter-card">
+    <h1>
+      📶 Интернетометр
+      <span>v2.0</span>
+    </h1>
 
-<div class="card">
-    <h1>📶 Интернетометр</h1>
-
-    <div class="speed" id="speed">0 Mbps</div>
-
-    <div class="status bad" id="status">Нет данных</div>
-
-    <div class="info" id="connectionType">
-        Тип сети: неизвестно
+    <!-- Тип соединения: Wi-Fi или Сотовая связь -->
+    <div class="connection-badge" id="connectionBadge">
+      <span class="connection-type" id="connectionLabel">
+        <span class="wifi-icon">📡</span> Определение...
+      </span>
     </div>
 
-    <button onclick="testSpeed()">Проверить</button>
-</div>
+    <!-- Блок скорости -->
+    <div class="speed-display">
+      <div>
+        <span class="speed-value" id="speedValue">--</span>
+        <span class="speed-unit">Мбит/с</span>
+      </div>
+    </div>
 
-<script>
-async function testSpeed(){
+    <!-- Оценка качества: Плохо / Хорошо / Отлично -->
+    <div class="quality-badge" id="qualityBadge">
+      <span id="qualityText">⏳ Ожидание</span>
+    </div>
 
-    const speedElement = document.getElementById("speed");
-    const statusElement = document.getElementById("status");
-    const connectionType = document.getElementById("connectionType");
+    <!-- Кнопка замера -->
+    <button class="test-button" id="testButton">
+      <span>⚡</span> Замерить скорость
+    </button>
 
-    // Определение типа подключения
-    let type = "Неизвестно";
+    <!-- Дополнительная информация: тип сети, поколение (для сотовой) -->
+    <div class="meta-info" id="metaInfo">
+      <span id="networkDetail">🌐 Подготовка...</span>
+    </div>
 
-    if(navigator.connection){
-        type = navigator.connection.effectiveType || "Неизвестно";
-    }
+    <!-- Индикатор прогресса -->
+    <div class="progress-indicator" id="progressArea">
+      <span id="progressText"></span>
+    </div>
+  </div>
 
-    connectionType.innerHTML = "Тип сети: " + type;
+  <script>
+    (function() {
+      'use strict';
 
-    speedElement.innerHTML = "Тест...";
+      // DOM элементы
+      const connectionLabel = document.getElementById('connectionLabel');
+      const speedValueEl = document.getElementById('speedValue');
+      const qualityBadge = document.getElementById('qualityBadge');
+      const qualityText = document.getElementById('qualityText');
+      const testButton = document.getElementById('testButton');
+      const networkDetail = document.getElementById('networkDetail');
+      const progressText = document.getElementById('progressText');
+      const connectionBadge = document.getElementById('connectionBadge');
 
-    // Тест скорости
-    const imageAddr = "https://upload.wikimedia.org/wikipedia/commons/3/3f/Fronalpstock_big.jpg";
-    const downloadSize = 14651500;
+      // Текущие данные
+      let currentConnectionType = 'unknown'; // 'wifi', 'cellular', 'ethernet' (если есть), 'unknown'
+      let lastMeasuredSpeed = null; // Mbps
 
-    let startTime, endTime;
+      // --- Вспомогательные функции ---
 
-    const cacheBuster = "?nnn=" + Math.random();
-
-    const download = new Image();
-
-    startTime = new Date().getTime();
-
-    download.onload = function(){
-        endTime = new Date().getTime();
-
-        const duration = (endTime - startTime) / 1000;
-
-        const bitsLoaded = downloadSize * 8;
-
-        const speedMbps = ((bitsLoaded / duration) / 1024 / 1024).toFixed(2);
-
-        speedElement.innerHTML = speedMbps + " Mbps";
-
-        // Оценка качества
-        if(speedMbps < 5){
-            statusElement.innerHTML = "Плохой";
-            statusElement.className = "status bad";
+      // Определение типа соединения через Network Information API
+      function getConnectionType() {
+        // Используем navigator.connection (если доступно)
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        
+        if (!connection) {
+          // Если API нет, используем эвристику (очень грубо, но покажем хотя бы предположение)
+          return 'unknown';
         }
-        else if(speedMbps < 30){
-            statusElement.innerHTML = "Хороший";
-            statusElement.className = "status good";
-        }
-        else{
-            statusElement.innerHTML = "Отличный";
-            statusElement.className = "status excellent";
-        }
-    };
 
-    download.src = imageAddr + cacheBuster;
-}
-</script>
+        const effectiveType = connection.effectiveType; // 'slow-2g', '2g', '3g', '4g' и т.д.
+        const type = connection.type; // 'wifi', 'cellular', 'ethernet', 'bluetooth', 'none' и т.д.
 
+        // type дает прямое указание на технологию
+        if (type === 'wifi') return 'wifi';
+        if (type === 'cellular') return 'cellular';
+        if (type === 'ethernet') return 'ethernet'; // можно трактовать как проводное, но покажем как "Ethernet"
+        
+        // Иногда type может быть undefined, но effectiveType намекает на сотовую связь
+        if (effectiveType && (effectiveType.includes('2g') || effectiveType.includes('3g') || effectiveType.includes('4g') || effectiveType === '5g' || effectiveType === 'slow-2g')) {
+          return 'cellular'; // предположительно сотовая связь
+        }
+        
+        // Если type === 'none' или что-то ещё
+        if (type === 'none') return 'none';
+        
+        return 'unknown';
+      }
+
+      // Получение читаемого названия типа соединения
+      function getReadableConnectionType(type) {
+        switch (type) {
+          case 'wifi': return 'Wi-Fi';
+          case 'cellular': return 'Сотовая связь';
+          case 'ethernet': return 'Ethernet';
+          case 'none': return 'Нет сети';
+          default: return 'Неизвестно';
+        }
+      }
+
+      // Получение детальной информации о сети (например, поколение сотовой связи)
+      function getNetworkDetailInfo() {
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        if (!connection) {
+          return 'Информация о сети недоступна';
+        }
+
+        const type = connection.type;
+        const effectiveType = connection.effectiveType;
+        
+        if (type === 'wifi') {
+          return `Wi-Fi • ${effectiveType ? 'Уровень: ' + effectiveType.toUpperCase() : 'Подключено'}`;
+        } else if (type === 'cellular') {
+          let generation = effectiveType ? effectiveType.toUpperCase() : 'Сотовая';
+          if (effectiveType === '5g') generation = '5G';
+          else if (effectiveType === '4g') generation = '4G/LTE';
+          else if (effectiveType === '3g') generation = '3G';
+          else if (effectiveType === '2g') generation = '2G';
+          else if (effectiveType === 'slow-2g') generation = '2G (медленно)';
+          return `📶 Сотовая сеть • ${generation}`;
+        } else if (type === 'ethernet') {
+          return '🔌 Ethernet • Проводное соединение';
+        } else if (type === 'none') {
+          return '❌ Нет подключения';
+        } else {
+          return effectiveType ? `Сеть: ${effectiveType.toUpperCase()}` : 'Тип сети не определён';
+        }
+      }
+
+      // Обновление интерфейса в соответствии с типом соединения
+      function updateConnectionUI() {
+        const connType = getConnectionType();
+        currentConnectionType = connType;
+        
+        const readable = getReadableConnectionType(connType);
+        
+        // Иконка и текст в бейдже
+        let iconHtml = '';
+        if (connType === 'wifi') {
+          iconHtml = '<span class="wifi-icon" style="color:#7cb9ff;">📶</span>';
+        } else if (connType === 'cellular') {
+          iconHtml = '<span class="cellular-icon" style="color:#f7b955;">📱</span>';
+        } else if (connType === 'ethernet') {
+          iconHtml = '<span style="color:#a0d9ff;">🔌</span>';
+        } else if (connType === 'none') {
+          iconHtml = '<span style="color:#ff7c7c;">🚫</span>';
+        } else {
+          iconHtml = '<span style="color:#cccccc;">❓</span>';
+        }
+        
+        connectionLabel.innerHTML = `${iconHtml} ${readable}`;
+        
+        // Детальная строка
+        networkDetail.textContent = getNetworkDetailInfo();
+        
+        // Если соединения нет, можно сбросить скорость
+        if (connType === 'none') {
+          speedValueEl.textContent = '--';
+          qualityBadge.className = 'quality-badge';
+          qualityText.textContent = 'Нет сети';
+          lastMeasuredSpeed = null;
+        }
+      }
+
+      // Классификация скорости: Плохо / Хорошо / Отлично
+      function classifySpeed(mbps) {
+        if (mbps === null || isNaN(mbps) || mbps < 0) {
+          return { level: 'unknown', text: 'Нет данных' };
+        }
+        
+        // Пороговые значения (можно настроить под реалии)
+        // Для мобильного интернета и Wi-Fi общие критерии:
+        if (mbps < 3) {
+          return { level: 'poor', text: 'Плохо' };
+        } else if (mbps < 12) {
+          return { level: 'good', text: 'Хорошо' };
+        } else {
+          return { level: 'excellent', text: 'Отлично' };
+        }
+      }
+
+      // Обновление отображения скорости и качества
+      function updateSpeedDisplay(mbps) {
+        if (mbps === null || isNaN(mbps)) {
+          speedValueEl.textContent = '--';
+          qualityBadge.className = 'quality-badge';
+          qualityText.textContent = '⚡ Ожидание';
+          lastMeasuredSpeed = null;
+          return;
+        }
+        
+        const rounded = Math.round(mbps * 10) / 10;
+        speedValueEl.textContent = rounded.toFixed(1);
+        lastMeasuredSpeed = rounded;
+        
+        const { level, text } = classifySpeed(rounded);
+        
+        // Удаляем все классы качества и добавляем нужный
+        qualityBadge.classList.remove('quality-excellent', 'quality-good', 'quality-poor');
+        
+        let emoji = '';
+        if (level === 'excellent') {
+          qualityBadge.classList.add('quality-excellent');
+          emoji = '🌟';
+        } else if (level === 'good') {
+          qualityBadge.classList.add('quality-good');
+          emoji = '👍';
+        } else if (level === 'poor') {
+          qualityBadge.classList.add('quality-poor');
+          emoji = '⚠️';
+        } else {
+          qualityBadge.className = 'quality-badge';
+          emoji = '📊';
+        }
+        
+        qualityText.textContent = `${emoji} ${text}`;
+      }
+
+      // Функция измерения скорости (используем загрузку небольшого файла с CDN, чтобы оценить пропускную способность)
+      async function measureSpeed() {
+        // Используем надёжный источник с поддержкой CORS и без кэширования
+        // Берем файл с размером около 200-500 КБ для быстрого, но информативного теста.
+        // Чтобы избежать проблем с кэшем, добавляем случайный параметр.
+        const testUrl = `https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js?r=${Math.random()}`;
+        // Также можно использовать небольшой файл, но этот ~87KB в сжатом виде, обычно достаточно.
+        // Для более точного измерения можно сделать несколько запросов, но для простоты один.
+        
+        const startTime = performance.now();
+        
+        try {
+          const response = await fetch(testUrl, {
+            method: 'GET',
+            cache: 'no-store',
+            mode: 'cors',
+          });
+          
+          if (!response.ok) {
+            throw new Error(`Ошибка загрузки: ${response.status}`);
+          }
+          
+          // Читаем весь ответ как ArrayBuffer для точного размера
+          const arrayBuffer = await response.arrayBuffer();
+          const endTime = performance.now();
+          
+          const durationSeconds = (endTime - startTime) / 1000;
+          
+          if (durationSeconds <= 0 || arrayBuffer.byteLength === 0) {
+            throw new Error('Слишком быстро или пустой ответ');
+          }
+          
+          // Размер в битах
+          const bitsLoaded = arrayBuffer.byteLength * 8;
+          // Скорость в Mbps (мегабит в секунду)
+          const speedMbps = (bitsLoaded / durationSeconds) / 1_000_000;
+          
+          return Math.max(0, speedMbps);
+        } catch (error) {
+          console.warn('Ошибка измерения скорости:', error);
+          throw error;
+        }
+      }
+
+      // Основная функция запуска теста
+      async function runSpeedTest() {
+        // Блокируем кнопку на время теста
+        testButton.disabled = true;
+        progressText.innerHTML = '<span class="spinner"></span> Измеряем скорость...';
+        speedValueEl.textContent = '...';
+        qualityBadge.className = 'quality-badge';
+        qualityText.textContent = '⏳ Тест...';
+        
+        // Обновляем информацию о соединении перед тестом (на случай смены)
+        updateConnectionUI();
+        
+        // Если нет сети – не выполняем
+        if (currentConnectionType === 'none') {
+          progressText.textContent = '❌ Нет подключения к сети';
+          speedValueEl.textContent = '--';
+          qualityBadge.className = 'quality-badge';
+          qualityText.textContent = 'Нет сети';
+          testButton.disabled = false;
+          return;
+        }
+        
+        try {
+          // Делаем измерение
+          const mbps = await measureSpeed();
+          updateSpeedDisplay(mbps);
+          progressText.textContent = '✅ Замер завершён';
+        } catch (err) {
+          progressText.textContent = '⚠️ Ошибка измерения';
+          speedValueEl.textContent = '--';
+          qualityBadge.className = 'quality-badge';
+          qualityText.textContent = 'Ошибка';
+          lastMeasuredSpeed = null;
+          console.error(err);
+        } finally {
+          testButton.disabled = false;
+          // Через 2 секунды убираем сообщение о завершении, оставляя пустым или актуальным
+          setTimeout(() => {
+            if (progressText.textContent.includes('Замер завершён') || progressText.textContent.includes('Ошибка')) {
+              progressText.textContent = '';
+            }
+          }, 2500);
+        }
+      }
+
+      // Обработчик изменения сетевого соединения (если поддерживается)
+      function setupNetworkListeners() {
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        if (connection) {
+          connection.addEventListener('change', () => {
+            updateConnectionUI();
+            // Если тип соединения изменился, можно сбросить предыдущий результат, чтобы не вводить в заблуждение
+            // Но оставим последнее измерение, просто обновим UI.
+            if (lastMeasuredSpeed !== null) {
+              // Не сбрасываем автоматически, но можно обновить классификацию на основе старого значения
+              updateSpeedDisplay(lastMeasuredSpeed);
+            }
+            progressText.textContent = '🔄 Сеть изменилась';
+            setTimeout(() => {
+              if (progressText.textContent === '🔄 Сеть изменилась') {
+                progressText.textContent = '';
+              }
+            }, 2000);
+          });
+        }
+        
+        // Также слушаем online/offline события для грубой оценки
+        window.addEventListener('online', () => {
+          updateConnectionUI();
+          progressText.textContent = '🌐 Подключение восстановлено';
+          setTimeout(() => { if (progressText.textContent === '🌐 Подключение восстановлено') progressText.textContent = ''; }, 2000);
+        });
+        
+        window.addEventListener('offline', () => {
+          currentConnectionType = 'none';
+          updateConnectionUI();
+          speedValueEl.textContent = '--';
+          qualityBadge.className = 'quality-badge';
+          qualityText.textContent = 'Нет сети';
+          lastMeasuredSpeed = null;
+          progressText.textContent = '🔴 Нет соединения';
+        });
+      }
+
+      // Инициализация
+      function init() {
+        updateConnectionUI();
+        // Начальное состояние скорости
+        updateSpeedDisplay(null);
+        
+        // Назначаем обработчик кнопки
+        testButton.addEventListener('click', runSpeedTest);
+        
+        // Настраиваем слушатели сети
+        setupNetworkListeners();
+        
+        // Дополнительно: если есть navigator.onLine === false, отражаем сразу
+        if (!navigator.onLine) {
+          currentConnectionType = 'none';
+          updateConnectionUI();
+          speedValueEl.textContent = '--';
+          qualityBadge.className = 'quality-badge';
+          qualityText.textContent = 'Нет сети';
+        }
+        
+        progressText.textContent = 'Готов к проверке';
+        setTimeout(() => {
+          if (progressText.textContent === 'Готов к проверке') {
+            progressText.textContent = '';
+          }
+        }, 2500);
+      }
+
+      // Запуск после загрузки DOM
+      window.addEventListener('DOMContentLoaded', init);
+    })();
+  </script>
 </body>
 </html>
